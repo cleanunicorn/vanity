@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/ecdsa"
 	"encoding/hex"
+	"runtime"
 	"strings"
 	"time"
 
@@ -20,26 +21,30 @@ func check_prefix(prefix string) *ecdsa.PrivateKey {
 	return nil
 }
 
-func check_prefix_routine(c chan *ecdsa.PrivateKey, prefix string) {
-	key, _ := crypto.GenerateKey()
-	addr := crypto.PubkeyToAddress(key.PublicKey)
+func check_prefix_routine(c chan *ecdsa.PrivateKey, prefix string, suffix string) {
+	for {
+		key, _ := crypto.GenerateKey()
+		addr := crypto.PubkeyToAddress(key.PublicKey)
 
-	if strings.HasPrefix(strings.ToLower(addr.Hex()), prefix) {
-		c <- key
-		return
+		if strings.HasPrefix(strings.ToLower(addr.Hex()), prefix) && strings.HasSuffix(strings.ToLower(addr.Hex()), suffix) {
+			c <- key
+		} else {
+			c <- nil
+		}
 	}
 
-	c <- nil
 }
 
 func main() {
 
-	var prefix string = "0xdeadcode"
+	var prefix string = "0xc001"
+	var suffix string = "d00d"
+	var threads int = runtime.NumCPU() * 2
 
-	c := make(chan *ecdsa.PrivateKey, 10)
+	c := make(chan *ecdsa.PrivateKey, threads)
 
-	for i := 0; i < 10; i++ {
-		go check_prefix_routine(c, prefix)
+	for i := 0; i < threads; i++ {
+		go check_prefix_routine(c, prefix, suffix)
 	}
 
 	start := time.Now()
@@ -49,15 +54,13 @@ func main() {
 		count++
 		key := <-c
 		if key != nil {
-			print(hex.EncodeToString(key.D.Bytes()), "\n")
+			print("Private Key: ", hex.EncodeToString(key.D.Bytes()), "\n")
+			print("Public Key: ", crypto.PubkeyToAddress(key.PublicKey).Hex(), "\n")
 			break
-		} else {
-			go check_prefix_routine(c, prefix)
-		}
-
+		} 
 		elapsed := time.Now().Sub(start)
-		if (count%10000 == 0) && (int(elapsed.Seconds()) > 0) {
-			print("Speed: ", count/int(elapsed.Seconds()), " keys/sec \n")
+		if (count%100000 == 0) && (int(elapsed.Seconds()) > 0) {
+			print("Speed: ", count/int(elapsed.Seconds()), " keys/sec, Total: ", count, "\n")
 		}
 	}
 
