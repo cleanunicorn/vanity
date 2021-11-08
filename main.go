@@ -26,9 +26,9 @@ func check_prefix_routine(c chan *ecdsa.PrivateKey, prefix string, suffix string
 
 func main() {
 
-	var prefix string = "0xc001"
-	var suffix string = "ca7"
-	var threads int = runtime.NumCPU() - 1
+	var prefix string = "0xf1a7da0"
+	var suffix string = ""
+	var threads int = runtime.NumCPU()
 
 	c := make(chan *ecdsa.PrivateKey, threads)
 
