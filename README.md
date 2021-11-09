@@ -23,4 +23,4 @@ Speed: 233333 keys/sec, Total: 700000
 ...
 ```
 
-After it finds an address, it will output the (checksummed address)[https://github.com/ethereum/EIPs/blob/master/EIPS/eip-55.md] and the associated private key.
+After it finds an address, it will output the [checksummed address](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-55.md) and the associated private key.
