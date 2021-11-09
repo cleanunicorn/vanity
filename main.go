@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/ecdsa"
 	"encoding/hex"
+	"fmt"
 	"runtime"
 	"strings"
 	"time"
@@ -21,14 +22,23 @@ func check_prefix_routine(c chan *ecdsa.PrivateKey, prefix string, suffix string
 			c <- nil
 		}
 	}
-
 }
 
 func main() {
+	var prefix string
+	fmt.Print("Prefix: ")
+	fmt.Scanf("%s", &prefix)
+	if !strings.HasPrefix(prefix, "0x") {
+		prefix = "0x" + prefix
+	}
 
-	var prefix string = "0xc001"
-	var suffix string = "ca7"
-	var threads int = runtime.NumCPU() - 1
+	var suffix string
+	fmt.Print("Suffix: ")
+	fmt.Scanf("%s", &suffix)
+
+	var threads int = runtime.NumCPU()
+	fmt.Printf("Number of threads: [%d]", threads)
+	fmt.Scanf("%d", &threads)
 
 	c := make(chan *ecdsa.PrivateKey, threads)
 
@@ -52,5 +62,4 @@ func main() {
 			print("Speed: ", count/int(elapsed.Seconds()), " keys/sec, Total: ", count, "\n")
 		}
 	}
-
 }
