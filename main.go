@@ -37,8 +37,10 @@ func main() {
 	fmt.Scanf("%s", &suffix)
 
 	var threads int = runtime.NumCPU()
-	fmt.Printf("Number of threads: [%d]", threads)
+	fmt.Printf("Number of threads: [%d] ", threads)
 	fmt.Scanf("%d", &threads)
+
+	fmt.Printf("Using %d threads to search for an address that looks like %s...%s \n", threads, prefix, suffix)
 
 	c := make(chan *ecdsa.PrivateKey, threads)
 
